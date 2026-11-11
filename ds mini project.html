@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Result Management System</title>
+<style>
+:root{--navy:#14213d;--blue:#2563eb;--cyan:#06b6d4;--bg:#f3f6fb;--ink:#172033;--muted:#64748b;--line:#e5eaf2;--green:#16a34a;--red:#dc2626}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(115deg,#14213d,#1d4ed8);color:white;padding:26px max(5vw,22px);display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}.logo{width:48px;height:48px;border-radius:14px;background:#ffffff20;display:grid;place-items:center;font-size:25px}
+h1{font-size:clamp(20px,3vw,28px);margin:0 0 5px}.sub{color:#dbeafe;font-size:13px}.pill{border:1px solid #ffffff55;padding:8px 12px;border-radius:30px;font-size:12px}
+main{max-width:1180px;margin:28px auto;padding:0 20px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px}
+.stat,.panel{background:white;border:1px solid var(--line);border-radius:16px;box-shadow:0 5px 20px #15264a08}
+.stat{padding:18px}.stat small{color:var(--muted);font-size:12px}.stat strong{display:block;font-size:26px;margin-top:8px;color:var(--navy)}
+.layout{display:grid;grid-template-columns:340px 1fr;gap:18px}.panel{padding:20px;margin-bottom:18px}.panel h2{font-size:17px;margin:0 0 16px}
+label{display:block;font-size:12px;font-weight:650;color:#475569;margin:13px 0 6px}
+input{width:100%;padding:11px 12px;border:1px solid #d8e0eb;border-radius:9px;font:inherit;outline:none}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2563eb18}
+button{border:0;border-radius:9px;padding:10px 14px;font-weight:650;cursor:pointer;font-size:13px;transition:.15s}
+button:hover{filter:brightness(.95);transform:translateY(-1px)}.primary{background:var(--blue);color:white;width:100%;margin-top:16px}.secondary{background:#eaf1ff;color:#1d4ed8}.danger{background:#fee2e2;color:#b91c1c}.ghost{background:#eef2f7;color:#334155}
+.message{font-size:12px;min-height:18px;margin-top:10px;color:var(--green)}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}.toolbar input{flex:1;min-width:170px}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.05em;background:#f8fafc}
+th,td{padding:13px 10px;border-bottom:1px solid var(--line)}tbody tr:last-child td{border-bottom:0}
+.empty{text-align:center;color:#94a3b8;padding:35px 10px}
+.grade{display:inline-block;border-radius:20px;padding:4px 9px;font-weight:700;font-size:11px;background:#dcfce7;color:#166534}
+.node-area{display:flex;align-items:center;gap:9px;overflow-x:auto;padding:10px 2px 16px}
+.node{flex:0 0 auto;min-width:145px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:12px;padding:12px;text-align:center}
+.node b{display:block;color:#1d4ed8;font-size:12px;margin-bottom:5px}.node span{font-size:12px;color:#334155}.arrow{color:#2563eb;font-size:22px;font-weight:bold}.null{padding:10px 13px;border:1px dashed #94a3b8;border-radius:9px;color:#64748b;font-size:12px}
+.note{color:var(--muted);font-size:12px;line-height:1.6}.footer{text-align:center;color:#94a3b8;font-size:11px;padding:15px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){header{padding:20px}.stats{gap:9px}.stat{padding:13px}.stat strong{font-size:22px}.panel{padding:15px}table{min-width:570px}.table-wrap{overflow-x:auto}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="logo">🎓</div><div><h1>Student Result Management System</h1><div class="sub">Using Singly Linked List · Data Structures Mini Project</div></div></div>
+ <div class="pill">CSE · Mini Project</div>
+</header>
+<main>
+ <section class="stats">
+  <div class="stat"><small>Total Students</small><strong id="total">0</strong></div>
+  <div class="stat"><small>Average Marks</small><strong id="average">0</strong></div>
+  <div class="stat"><small>Highest Marks</small><strong id="highest">0</strong></div>
+  <div class="stat"><small>Pass Count</small><strong id="passed">0</strong></div>
+ </section>
+ <div class="layout">
+  <aside>
+   <section class="panel">
+    <h2>➕ Add Student Record</h2>
+    <form id="studentForm">
+     <label for="reg">Register Number</label><input id="reg" placeholder="e.g. 814725104104" required>
+     <label for="name">Student Name</label><input id="name" placeholder="Enter student name" required>
+     <label for="marks">Marks (0–100)</label><input id="marks" type="number" min="0" max="100" placeholder="Enter marks" required>
+     <button class="primary" type="submit">Add Student to Linked List</button>
+     <div class="message" id="message" aria-live="polite"></div>
+    </form>
+   </section>
+   <section class="panel">
+    <h2>🗑️ Delete Student</h2>
+    <label for="deleteReg">Register Number</label><input id="deleteReg" placeholder="Enter register number">
+    <button class="primary danger" id="deleteBtn" type="button">Delete Record</button>
+    <p class="note">The node is removed by updating the linked-list pointers.</p>
+   </section>
+  </aside>
+  <section>
+   <section class="panel">
+    <h2>📋 Student Records</h2>
+    <div class="toolbar"><input id="search" placeholder="Search by register number or name..."><button class="secondary" id="clearSearch">Clear</button><button class="ghost" id="sample">Load Sample</button></div>
+    <div class="table-wrap"><table><thead><tr><th>Register No.</th><th>Name</th><th>Marks</th><th>Grade</th><th>Status</th></tr></thead><tbody id="records"><tr><td colspan="5" class="empty">No student records yet. Add a student to begin.</td></tr></tbody></table></div>
+   </section>
+   <section class="panel">
+    <h2>🔗 Singly Linked List Visualization</h2>
+    <p class="note">Each node stores the register number, student details and a pointer to the next node. New nodes are inserted at the head (O(1)).</p>
+    <div class="node-area" id="nodes"><div class="null">HEAD → NULL</div></div>
+   </section>
+  </section>
+ </div>
+ <div class="footer">Student Result Management System · Singly Linked List Demonstration</div>
+</main>
+<script>
+// Actual singly linked list implementation
+class Node {
+ constructor(regNo, name, marks) { this.regNo=regNo; this.name=name; this.marks=marks; this.next=null; }
+}
+class StudentLinkedList {
+ constructor(){this.head=null;this.length=0;}
+ insert(regNo,name,marks){const node=new Node(regNo,name,marks);node.next=this.head;this.head=node;this.length++;}
+ delete(regNo){
+  if(!this.head)return false;
+  if(this.head.regNo===regNo){this.head=this.head.next;this.length--;return true;}
+  let current=this.head;
+  while(current.next && current.next.regNo!==regNo) current=current.next;
+  if(!current.next)return false;
+  current.next=current.next.next;this.length--;return true;
+ }
+ toArray(){const out=[];let current=this.head;while(current){out.push(current);current=current.next;}return out;}
+ find(regNo){let current=this.head;while(current){if(current.regNo===regNo)return current;current=current.next;}return null;}
+}
+const list=new StudentLinkedList();
+const $=id=>document.getElementById(id);
+function grade(m){return m>=90?'A+':m>=80?'A':m>=70?'B':m>=60?'C':m>=50?'D':'F';}
+function render(){
+ const all=list.toArray(), term=$('search').value.trim().toLowerCase();
+ const visible=all.filter(s=>s.regNo.toLowerCase().includes(term)||s.name.toLowerCase().includes(term));
+ $('total').textContent=all.length;
+ $('average').textContent=all.length?(all.reduce((a,s)=>a+s.marks,0)/all.length).toFixed(1):'0';
+ $('highest').textContent=all.length?Math.max(...all.map(s=>s.marks)):'0';
+ $('passed').textContent=all.filter(s=>s.marks>=50).length;
+ $('records').innerHTML=visible.length?visible.map(s=>`<tr><td>${escapeHTML(s.regNo)}</td><td>${escapeHTML(s.name)}</td><td>${s.marks}</td><td><span class="grade">${grade(s.marks)}</span></td><td style="color:${s.marks>=50?'#16a34a':'#dc2626'};font-weight:700">${s.marks>=50?'Pass':'Fail'}</td></tr>`).join(''):`<tr><td colspan="5" class="empty">${all.length?'No matching student found.':'No student records yet. Add a student to begin.'}</td></tr>`;
+ const nodes=$('nodes');
+ if(!all.length){nodes.innerHTML='<div class="null">HEAD → NULL</div>';return;}
+ nodes.innerHTML='<div class="arrow">HEAD →</div>'+all.map((s,i)=>`<div class="node"><b>NODE ${i+1}</b><span>${escapeHTML(s.regNo)}</span><br><span>${escapeHTML(s.name)}</span><br><span>Marks: ${s.marks}</span></div><div class="arrow">→</div>`).join('')+'<div class="null">NULL</div>';
+}
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+$('studentForm').addEventListener('submit',e=>{
+ e.preventDefault();const reg=$('reg').value.trim(),name=$('name').value.trim(),marks=Number($('marks').value);
+ if(list.find(reg)){ $('message').style.color='#dc2626';$('message').textContent='Register number already exists.';return;}
+ if(!reg||!name||!Number.isInteger(marks)||marks<0||marks>100){$('message').style.color='#dc2626';$('message').textContent='Enter valid details and marks between 0 and 100.';return;}
+ list.insert(reg,name,marks);$('studentForm').reset();$('message').style.color='#16a34a';$('message').textContent='Student added successfully!';render();
+});
+$('deleteBtn').addEventListener('click',()=>{
+ const reg=$('deleteReg').value.trim();if(!reg){alert('Enter a register number.');return;}
+ if(list.delete(reg)){alert('Student record deleted successfully.');$('deleteReg').value='';render();}
+ else alert('Register number not found.');
+});
+$('search').addEventListener('input',render);
+$('clearSearch').addEventListener('click',()=>{$('search').value='';render();});
+$('sample').addEventListener('click',()=>{
+ if(list.length && !confirm('Add sample records to the current list?'))return;
+ const samples=[['814725104104','Nithin S',88],['814725104075','Kirubakaran R',76],['814725104101','Arun Kumar',92]];
+ samples.forEach(s=>{if(!list.find(s[0]))list.insert(...s);});render();
+});
+render();
+</script>
+</body>
+</html>
